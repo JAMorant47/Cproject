@@ -1,17 +1,34 @@
+
 #include <stdio.h>
+// Tempo Library File//
 #include <stdlib.h>
+// Standard Library File//
 #include <string.h>
+// Library File to perform functions on string//
 #include <ctype.h>
 #include <stdbool.h>
 #include <time.h>
+// Additional Library Files to use different tools//
+    
 #define depends 0
+// Define Limit of varible depends //
 #define MAX_CUSTOMERS 100
+// Define Limit by MAX_CUSTOMERS//
 #define MAX_NAME_LENGTH 50
+// Define limit by MAX_NAME_LENGTH//
 #define MAX_CONTACT_LENGTH 15
+// Define limit by MAX_CONTACT_LENGTH//
 #define MAX_ADDRESS_LENGTH 100
+// Define limit by MAX_ADDRESS_LENGTH//
 #define MAX_HISTORY_LENGTH 1000
+// Define limit by MAX_HISTORY_LENGTH//
+    
+/* The program is divided into three parts-:
+ 1) Customer Management
+2) Service Management 
+3) Billing System */
 
-// Service Structure
+// Service Management Structure
 typedef struct {
     char serviceName[30];
     int cost;
@@ -279,12 +296,17 @@ void vehicleService(CustomerManager* manager, int customer_id) {
         {"Normal Wash", 30, 1}
     };
 
+    // Declaring a string of name vehicle type to allow the user to enter one of the three vehicle types//
     char vehicleType[20];
     printf("\nCustomer: %s\n", customer->name);
     printf("Enter vehicle type (SUV/SEDAN/HATCHBACK): ");
     scanf("%s", vehicleType);
-    getchar(); // Clear buffer
-
+    // Scanning the string//
+    getchar(); // Clear buffer of the input
+    
+    /* We have type defined a structure in the start with the definition service and now we declare two structure variable
+       to input the services the user wants and type of car wash he wants */
+      
     Service *selectedServices;
     Service *selectedCarWashOptions;
     int serviceCount;
@@ -292,31 +314,43 @@ void vehicleService(CustomerManager* manager, int customer_id) {
 
     if (strcasecmp(vehicleType, "SUV") == 0) {
         selectedServices = suvServices;
+    // If the vehicle type entered by the user is SUV the selected services displayed is the type of SUV//
         selectedCarWashOptions = carWashOptionsSUV;
         serviceCount = 7;
         carWashOptionCount = 2;
+
+        // Number of Car wash options and services are predefined //
     } else if (strcasecmp(vehicleType, "SEDAN") == 0) {
         selectedServices = sedanServices;
+        // If the vehicle type entered by the user is Sedan the selected services displayed is the type of Sedan//
         selectedCarWashOptions = carWashOptionsSedan;
         serviceCount = 7;
         carWashOptionCount = 2;
+        // Number of Car wash options and services are predefined //
     } else if (strcasecmp(vehicleType, "HATCHBACK") == 0) {
         selectedServices = hatchbackServices;
         selectedCarWashOptions = carWashOptionsHatchback;
+        // If the vehicle type entered by the user is hatchback the selected services displayed is the type of hatchback//
         serviceCount = 7;
         carWashOptionCount = 2;
+        // Number of Car wash options and services are predefined //
     } else {
         printf("\nService not available for the entered vehicle type.\n");
         return;
+        // IF the car type entered by the user is not available, the above message is displayed//
     }
 
     displayServices(selectedServices, serviceCount);
-
+   // Calling the Display Services Function and passes the integer selected services and service count as paramateres//
     int choices[7];
+    // An array to input the number of services the person wants //
     int carWashChoice = 0;
     int numChoices;
+    // Storing the number of choices the person wants//
     printf("\nHow many services would you like to choose? (Max 7): ");
     scanf("%d", &numChoices);
+
+    // An if statement if the number of choices is less than 1 or greater than 7, an error mesage is displayed and the person is redirected back//
 
     if (numChoices < 1 || numChoices > 7) {
         printf("\nInvalid number of services. Please choose between 1 and 7.\n");
@@ -331,40 +365,50 @@ void vehicleService(CustomerManager* manager, int customer_id) {
     Service selectedServicesList[7];
     int selectedServicesCount = 0;
     int totalCost = 0, totalTime = 0;
+    // Initialised two varibles to calculat the total cost and total time of the service //
 
+   // Printing the services selected by the user //
     printf("\nSelected services:\n");
     for (int i = 0; i < numChoices; i++) {
         int choice = choices[i];
         if (choice >= 1 && choice <= serviceCount) {
             if (strcmp(selectedServices[choice - 1].serviceName, "Car Wash") == 0) {
+                // If the person selects selected services choice-1, he will be displayed the suboptions for car wash //
                 displayCarWashOptions(selectedCarWashOptions, carWashOptionCount);
                 printf("\nChoose Car Wash option: ");
                 scanf("%d", &carWashChoice);
-
+                // Scanning the preferred cash wash option //
                 if (carWashChoice >= 1 && carWashChoice <= carWashOptionCount) {
                     Service selectedCarWash = selectedCarWashOptions[carWashChoice - 1];
                     printf("- %s (Cost: $%d, Time: %d hours)\n", 
                            selectedCarWash.serviceName, selectedCarWash.cost, selectedCarWash.hours);
                     totalCost += selectedCarWash.cost;
+                    // Calculating the total cost after considering the car wash type //
                     totalTime += selectedCarWash.hours;
+                   // Calculating the total time after considering the car wash type //
                     selectedServicesList[selectedServicesCount++] = selectedCarWash;
+                    
                 }
             } else {
                 Service selectedService = selectedServices[choice - 1];
+                // If the person does not select the car wash option, he will not be displayed the subchoices//
                 printf("- %s (Cost: $%d, Time: %d hours)\n", 
                        selectedService.serviceName, selectedService.cost, selectedService.hours);
                 totalCost += selectedService.cost;
+                // Calculating the total cost after considering the service type //
                 totalTime += selectedService.hours;
+                // Calculating the total time after considering the service type //
                 selectedServicesList[selectedServicesCount++] = selectedService;
             }
         }
     }
 
-    // Apply discount if total cost exceeds $500
+    // Apply discount if total cost of the service exceeds $500
     if (totalCost > 500) {
         int discount = totalCost * 0.1;
         printf("\nApplying 10%% discount: -$%d\n", discount);
         totalCost -= discount;
+        // Store the new value in total cost varible//
     }
 
     // Print bill
